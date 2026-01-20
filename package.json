@@ -1,0 +1,39 @@
+{
+  "name": "tiktok-gift-to-mpcnc-plotter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Listen to TikTok LIVE gifts and drive an MPCNC pen plotter with Marlin G-code.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --target node20 --sourcemap --clean",
+    "start": "node dist/index.js",
+    "lint": "eslint .",
+    "format": "prettier -w .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@serialport/parser-readline": "^11.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pino": "^9.0.0",
+    "serialport": "^11.0.0",
+    "tiktok-live-connector": "^2.0.8",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.9",
+    "eslint": "^9.10.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.2",
+    "tsx": "^4.15.6",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.9.0"
+  }
+}
