@@ -1,0 +1,43 @@
+{
+  "http": {
+    "port": 3000
+  },
+  "tiktok": {
+    "username": "",
+    "roomId": ""
+  },
+  "files": {
+    "giftMapPath": "./config/default.giftmap.json",
+    "statePath": "./config/default.state.json"
+  },
+  "plotter": {
+    "x0": 0,
+    "y0": 0,
+    "xMax": 220,
+    "strokeLength": 6,
+    "strokeSpacing": 8,
+    "zUp": 5,
+    "zDown": 0,
+    "feedRate": 1200,
+    "plungeRate": 300,
+    "rowStartX": 0
+  },
+  "rows": {
+    "row1": { "y": 10 },
+    "row2": { "y": 20 },
+    "row3": { "y": 30 },
+    "row4": { "y": 40 },
+    "row5": { "y": 50 }
+  },
+  "serial": {
+    "port": "",
+    "baudRate": 115200
+  },
+  "worker": {
+    "tickMs": 500
+  },
+  "dryRun": true,
+  "logging": {
+    "level": "info"
+  }
+}

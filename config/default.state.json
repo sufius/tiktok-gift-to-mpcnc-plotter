@@ -1,0 +1,10 @@
+{
+  "rows": {
+    "row1": { "x": 0, "y": 10, "pendingStrokes": 0 },
+    "row2": { "x": 0, "y": 20, "pendingStrokes": 0 },
+    "row3": { "x": 0, "y": 30, "pendingStrokes": 0 },
+    "row4": { "x": 0, "y": 40, "pendingStrokes": 0 },
+    "row5": { "x": 0, "y": 50, "pendingStrokes": 0 }
+  },
+  "paperRun": { "needsNewPaper": false }
+}
