@@ -63,3 +63,31 @@ Dry-run mode logs G-code instead of streaming it. Set `DRY_RUN=true` in `.env` o
 - TikTok integration is best-effort; disconnects are retried with backoff.
 - For plotter-specific expectations, see `docs/marlin-notes.md`.
 - Architecture and failure modes are described in `docs/architecture.md`.
+
+
+
+,
+  // "Bagel": "row1",
+  // "I'm New Here": "row2",
+  // "Friendship Necklace": "row3",
+  // "GG": "row4",
+  // "Gold Boxing Gloves": "row5",
+  // "Hand Hearts": "row6",
+  // "Doughnut": "row7",
+  // "Flowers": "row8",
+  // "Journey Pass": "row9",
+  // "Paper Crane": "row10",
+  // "Heart": "row11",
+  // "Confetti": "row12",
+  // "Gold Medal": "row13",
+  // "Money Gun": "row14",
+  // "Corgi": "row15",
+  // "Rose Hand": "row16",
+  // "Balloons": "row17",
+  // "Swan": "row1",
+  // "Hanging Lights": "row2",
+  // "October": "row3",
+  // "Galaxy": "row4",
+  // "You're Amazing": "row5",
+  // "Potato in Paris": "row6",
+  // "Coral": "row7"

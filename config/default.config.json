@@ -7,13 +7,13 @@
     "roomId": ""
   },
   "files": {
-    "giftMapPath": "./config/default.giftmap.json",
-    "statePath": "./config/default.state.json"
+    "giftMapPath": "./default.giftmap.json",
+    "statePath": "./default.state.json"
   },
   "plotter": {
     "x0": 0,
     "y0": 0,
-    "xMax": 220,
+    "xMax": 200,
     "strokeLength": 6,
     "strokeSpacing": 8,
     "zUp": 5,
@@ -27,7 +27,19 @@
     "row2": { "y": 20 },
     "row3": { "y": 30 },
     "row4": { "y": 40 },
-    "row5": { "y": 50 }
+    "row5": { "y": 50 },
+    "row6": { "y": 60 },
+    "row7": { "y": 70 },
+    "row8": { "y": 80 },
+    "row9": { "y": 90 },
+    "row10": { "y": 100 },
+    "row11": { "y": 110 },
+    "row12": { "y": 120 },
+    "row13": { "y": 130 },
+    "row14": { "y": 140 },
+    "row15": { "y": 150 },
+    "row16": { "y": 160 },
+    "row17": { "y": 170 }
   },
   "serial": {
     "port": "",

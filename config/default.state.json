@@ -1,10 +1,92 @@
 {
   "rows": {
-    "row1": { "x": 0, "y": 10, "pendingStrokes": 0 },
-    "row2": { "x": 0, "y": 20, "pendingStrokes": 0 },
-    "row3": { "x": 0, "y": 30, "pendingStrokes": 0 },
-    "row4": { "x": 0, "y": 40, "pendingStrokes": 0 },
-    "row5": { "x": 0, "y": 50, "pendingStrokes": 0 }
+    "row1": {
+      "x": 216,
+      "y": 10,
+      "pendingStrokes": 458
+    },
+    "row2": {
+      "x": 0,
+      "y": 20,
+      "pendingStrokes": 2
+    },
+    "row3": {
+      "x": 0,
+      "y": 30,
+      "pendingStrokes": 0
+    },
+    "row4": {
+      "x": 0,
+      "y": 40,
+      "pendingStrokes": 0
+    },
+    "row5": {
+      "x": 184,
+      "y": 50,
+      "pendingStrokes": 0
+    },
+    "row6": {
+      "x": 0,
+      "y": 60,
+      "pendingStrokes": 16
+    },
+    "row7": {
+      "x": 0,
+      "y": 70,
+      "pendingStrokes": 14
+    },
+    "row8": {
+      "x": 0,
+      "y": 80,
+      "pendingStrokes": 0
+    },
+    "row9": {
+      "x": 0,
+      "y": 90,
+      "pendingStrokes": 0
+    },
+    "row10": {
+      "x": 0,
+      "y": 100,
+      "pendingStrokes": 0
+    },
+    "row11": {
+      "x": 0,
+      "y": 110,
+      "pendingStrokes": 0
+    },
+    "row12": {
+      "x": 0,
+      "y": 120,
+      "pendingStrokes": 2
+    },
+    "row13": {
+      "x": 0,
+      "y": 130,
+      "pendingStrokes": 0
+    },
+    "row14": {
+      "x": 0,
+      "y": 140,
+      "pendingStrokes": 0
+    },
+    "row15": {
+      "x": 0,
+      "y": 150,
+      "pendingStrokes": 0
+    },
+    "row16": {
+      "x": 0,
+      "y": 160,
+      "pendingStrokes": 8
+    },
+    "row17": {
+      "x": 0,
+      "y": 170,
+      "pendingStrokes": 0
+    }
   },
-  "paperRun": { "needsNewPaper": false }
+  "paperRun": {
+    "needsNewPaper": true
+  }
 }
