@@ -13,7 +13,7 @@
   "plotter": {
     "x0": 0,
     "y0": 0,
-    "xMax": 200,
+    "xMax": 180,
     "strokeLength": 6,
     "strokeSpacing": 8,
     "zUp": 5,
@@ -23,32 +23,32 @@
     "rowStartX": 0
   },
   "rows": {
-    "row1": { "y": 10 },
-    "row2": { "y": 20 },
-    "row3": { "y": 30 },
-    "row4": { "y": 40 },
-    "row5": { "y": 50 },
-    "row6": { "y": 60 },
-    "row7": { "y": 70 },
-    "row8": { "y": 80 },
-    "row9": { "y": 90 },
-    "row10": { "y": 100 },
-    "row11": { "y": 110 },
-    "row12": { "y": 120 },
-    "row13": { "y": 130 },
-    "row14": { "y": 140 },
-    "row15": { "y": 150 },
-    "row16": { "y": 160 },
-    "row17": { "y": 170 }
+    "row1": { "y": 30 },
+    "row2": { "y": 40 },
+    "row3": { "y": 50 },
+    "row4": { "y": 60 },
+    "row5": { "y": 70 },
+    "row6": { "y": 80 },
+    "row7": { "y": 90 },
+    "row8": { "y": 100 },
+    "row9": { "y": 110 },
+    "row10": { "y": 120 },
+    "row11": { "y": 130 },
+    "row12": { "y": 140 },
+    "row13": { "y": 150 },
+    "row14": { "y": 160 },
+    "row15": { "y": 170 },
+    "row16": { "y": 180 },
+    "row17": { "y": 190 }
   },
   "serial": {
-    "port": "",
-    "baudRate": 115200
+    "port": "COM3",
+    "baudRate": 250000
   },
   "worker": {
     "tickMs": 500
   },
-  "dryRun": true,
+  "dryRun": false,
   "logging": {
     "level": "info"
   }

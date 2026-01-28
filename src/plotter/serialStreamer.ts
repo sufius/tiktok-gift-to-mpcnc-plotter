@@ -18,8 +18,25 @@ export class SerialStreamer {
 
   constructor(
     private readonly logger: Logger,
-    private readonly dryRun: boolean,
+    private dryRun: boolean,
   ) {}
+
+  getDryRun(): boolean {
+    return this.dryRun;
+  }
+
+  async setDryRun(next: boolean): Promise<void> {
+    if (next === this.dryRun) {
+      return;
+    }
+
+    if (next && this.port?.isOpen) {
+      await this.disconnect();
+    }
+
+    this.dryRun = next;
+    this.logger.info({ dryRun: next }, 'dry-run mode updated');
+  }
 
   isConnected(): boolean {
     return Boolean(this.port?.isOpen);

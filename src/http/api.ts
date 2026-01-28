@@ -1,4 +1,6 @@
 import express from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
 import { z } from 'zod';
 import type { Logger } from 'pino';
 import type { AppConfig } from '../config.js';
@@ -18,6 +20,14 @@ const connectSchema = z.object({
   baud: z.number().int().positive().optional(),
 });
 
+const dryRunSchema = z.object({
+  dryRun: z.boolean(),
+});
+
+const gcodeSchema = z.object({
+  lines: z.array(z.string().min(1)).min(1),
+});
+
 export type ApiDeps = {
   config: AppConfig;
   stateStore: StateStore;
@@ -31,6 +41,15 @@ export type ApiDeps = {
 export function createApiServer(deps: ApiDeps): express.Express {
   const app = express();
   app.use(express.json({ limit: '1mb' }));
+
+  const webRoots = [
+    path.resolve(process.cwd(), 'src', 'web'),
+    path.resolve(process.cwd(), 'dist', 'web'),
+  ];
+  const webRoot = webRoots.find((dir) => fs.existsSync(path.join(dir, 'index.html')));
+  if (webRoot) {
+    app.use('/', express.static(webRoot));
+  }
 
   app.get('/health', (_req, res) => {
     res.json({ ok: true });
@@ -93,6 +112,34 @@ export function createApiServer(deps: ApiDeps): express.Express {
   app.post('/plotter/disconnect', async (_req, res) => {
     await deps.streamer.disconnect();
     res.json({ ok: true });
+  });
+
+  app.post('/plotter/gcode', async (req, res) => {
+    const parsed = gcodeSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      res.status(400).json({ error: 'invalid request body' });
+      return;
+    }
+
+    try {
+      await deps.streamer.sendLines(parsed.data.lines);
+      res.json({ ok: true, lines: parsed.data.lines.length });
+    } catch (error) {
+      deps.logger.error({ err: error }, 'gcode send failed');
+      res.status(500).json({ error: 'failed to send gcode' });
+    }
+  });
+
+  app.post('/config/dry-run', async (req, res) => {
+    const parsed = dryRunSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      res.status(400).json({ error: 'invalid request body' });
+      return;
+    }
+
+    await deps.streamer.setDryRun(parsed.data.dryRun);
+    deps.config.dryRun = parsed.data.dryRun;
+    res.json({ ok: true, dryRun: deps.config.dryRun });
   });
 
   app.post('/simulate/gift', async (req, res) => {
