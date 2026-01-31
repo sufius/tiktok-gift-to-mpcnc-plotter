@@ -38,10 +38,12 @@ Environment overrides (see `.env.example`):
 
 ## Plotter Behavior
 - Each row has a fixed Y position and an X cursor.
-- A stroke is a short line segment drawn in +X at the row's Y.
+- A stroke is a short line segment drawn in +Y at the row's Y.
 - After each stroke, X advances by `strokeSpacing`.
 - If the next stroke would exceed `xMax`, the worker ends the run, sets `needsNewPaper`, and pauses.
 - Use `POST /paper/changed` after loading new paper to reset X and continue.
+
+Default config assumes DIN-A4 portrait with a 30 mm margin on all sides (usable area 237 mm along X and 150 mm along Y), origin at the lower-left of the usable area.
 
 ## HTTP API
 - `GET /health`

@@ -140,11 +140,10 @@ export class PlotterWorker {
   }
 
   private calculateFit(xStart: number): number {
-    const { xMax, strokeLength, strokeSpacing } = this.config.plotter;
-    const maxStart = xMax - strokeLength;
-    if (xStart > maxStart) {
+    const { xMax, strokeSpacing } = this.config.plotter;
+    if (xStart > xMax) {
       return 0;
     }
-    return Math.floor((maxStart - xStart) / strokeSpacing) + 1;
+    return Math.floor((xMax - xStart) / strokeSpacing) + 1;
   }
 }

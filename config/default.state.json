@@ -1,88 +1,88 @@
 {
   "rows": {
     "row1": {
-      "x": 128,
-      "y": 30,
+      "x": 0,
+      "y": 0,
       "pendingStrokes": 0
     },
     "row2": {
       "x": 0,
-      "y": 40,
+      "y": 9,
       "pendingStrokes": 0
     },
     "row3": {
       "x": 0,
-      "y": 50,
+      "y": 18,
       "pendingStrokes": 0
     },
     "row4": {
       "x": 0,
-      "y": 60,
+      "y": 27,
       "pendingStrokes": 0
     },
     "row5": {
       "x": 0,
-      "y": 70,
+      "y": 36,
       "pendingStrokes": 0
     },
     "row6": {
       "x": 0,
-      "y": 80,
+      "y": 45,
       "pendingStrokes": 0
     },
     "row7": {
       "x": 0,
-      "y": 90,
+      "y": 54,
       "pendingStrokes": 0
     },
     "row8": {
       "x": 0,
-      "y": 100,
+      "y": 63,
       "pendingStrokes": 0
     },
     "row9": {
       "x": 0,
-      "y": 110,
+      "y": 72,
       "pendingStrokes": 0
     },
     "row10": {
       "x": 0,
-      "y": 120,
+      "y": 81,
       "pendingStrokes": 0
     },
     "row11": {
       "x": 0,
-      "y": 130,
+      "y": 90,
       "pendingStrokes": 0
     },
     "row12": {
       "x": 0,
-      "y": 140,
+      "y": 99,
       "pendingStrokes": 0
     },
     "row13": {
       "x": 0,
-      "y": 150,
+      "y": 108,
       "pendingStrokes": 0
     },
     "row14": {
       "x": 0,
-      "y": 160,
+      "y": 117,
       "pendingStrokes": 0
     },
     "row15": {
       "x": 0,
-      "y": 170,
+      "y": 126,
       "pendingStrokes": 0
     },
     "row16": {
       "x": 0,
-      "y": 180,
+      "y": 135,
       "pendingStrokes": 0
     },
     "row17": {
       "x": 0,
-      "y": 190,
+      "y": 144,
       "pendingStrokes": 0
     }
   },

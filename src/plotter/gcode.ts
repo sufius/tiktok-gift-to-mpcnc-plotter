@@ -25,7 +25,7 @@ export function buildStrokeJobGcode(params: {
   for (let i = 0; i < count; i += 1) {
     lines.push(`G0 X${fmt(x)} Y${fmt(y)} Z${fmt(zUp)}`);
     lines.push(`G1 Z${fmt(zDown)} F${fmt(plungeRate)}`);
-    lines.push(`G1 X${fmt(x + strokeLength)} F${fmt(feedRate)}`);
+    lines.push(`G1 Y${fmt(y + strokeLength)} F${fmt(feedRate)}`);
     lines.push(`G1 Z${fmt(zUp)} F${fmt(plungeRate)}`);
     x += strokeSpacing;
   }
