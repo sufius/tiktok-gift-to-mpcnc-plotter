@@ -199,7 +199,7 @@ async function sendGcode(lines) {
 }
 
 function formatMove(axis, distance, feedRate) {
-  return ['G91', `G0 ${axis}${distance} F${feedRate}`, 'G90'];
+  return ['G91', `G1 ${axis}${distance} F${feedRate}`, 'G90'];
 }
 
 connectForm.addEventListener('submit', async (event) => {

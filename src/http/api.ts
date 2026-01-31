@@ -167,12 +167,12 @@ export function createApiServer(deps: ApiDeps): express.Express {
 
   app.post('/plotter/safe-home', async (_req, res) => {
     try {
-      const { x0, y0, zUp, plungeRate } = deps.config.plotter;
+      const { x0, y0, zUp, plungeRate, feedRate } = deps.config.plotter;
       await deps.streamer.sendLines([
         'G90',
         'G21',
         `G1 Z${fmt(zUp)} F${fmt(plungeRate)}`,
-        `G0 X${fmt(x0)} Y${fmt(y0)}`,
+        `G1 X${fmt(x0)} Y${fmt(y0)} F${fmt(feedRate)}`,
       ]);
       const position = await deps.streamer.requestPosition();
       res.json({

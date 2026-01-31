@@ -23,7 +23,7 @@ export function buildStrokeJobGcode(params: {
   let x = xStart;
 
   for (let i = 0; i < count; i += 1) {
-    lines.push(`G0 X${fmt(x)} Y${fmt(y)} Z${fmt(zUp)}`);
+    lines.push(`G1 X${fmt(x)} Y${fmt(y)} Z${fmt(zUp)} F${fmt(feedRate)}`);
     lines.push(`G1 Z${fmt(zDown)} F${fmt(plungeRate)}`);
     lines.push(`G1 Y${fmt(y + strokeLength)} F${fmt(feedRate)}`);
     lines.push(`G1 Z${fmt(zUp)} F${fmt(plungeRate)}`);
@@ -36,6 +36,6 @@ export function buildStrokeJobGcode(params: {
 export function buildEndOfRunGcode(config: AppConfig): string[] {
   return [
     `G1 Z${fmt(config.plotter.zUp)} F${fmt(config.plotter.plungeRate)}`,
-    `G0 X${fmt(config.plotter.x0)} Y${fmt(config.plotter.y0)}`,
+    `G1 X${fmt(config.plotter.x0)} Y${fmt(config.plotter.y0)} F${fmt(config.plotter.feedRate)}`,
   ];
 }
