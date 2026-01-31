@@ -57,12 +57,20 @@ async function main(): Promise<void> {
     worker.kick();
   };
 
+  const tiktokListener = new TikTokListener(
+    config,
+    giftMap,
+    applyGift,
+    logger.child({ module: 'tiktok' }),
+  );
+
   const app = createApiServer({
     config,
     stateStore,
     worker,
     giftMap,
     streamer,
+    tiktokListener,
     applyGift,
     logger: logger.child({ module: 'api' }),
   });
@@ -71,14 +79,9 @@ async function main(): Promise<void> {
     logger.info({ port: config.http.port }, 'http server listening');
   });
 
-  const tiktokListener = new TikTokListener(
-    config,
-    giftMap,
-    applyGift,
-    logger.child({ module: 'tiktok' }),
-  );
-
-  if (config.tiktok.username || config.tiktok.roomId) {
+  if (config.noTiktokRun) {
+    logger.info('NO_TIKTOK_RUN enabled; listener disabled');
+  } else if (config.tiktok.username || config.tiktok.roomId) {
     tiktokListener.start();
   } else {
     logger.warn('tiktok username/roomId missing; listener disabled');

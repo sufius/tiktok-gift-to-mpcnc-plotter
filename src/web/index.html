@@ -73,6 +73,9 @@
             <div class="rounded-full border border-ink/10 bg-white/70 px-4 py-2 shadow-sm">
               Worker: <span id="worker-text" class="font-semibold text-ink">--</span>
             </div>
+            <div class="rounded-full border border-ink/10 bg-white/70 px-4 py-2 shadow-sm">
+              TikTok: <span id="tiktok-text" class="font-semibold text-ink">--</span>
+            </div>
           </div>
         </div>
       </header>
@@ -95,15 +98,33 @@
               </span>
               <span class="text-sm font-medium">Dry run mode</span>
             </label>
+            <label class="flex cursor-pointer items-center gap-3">
+              <input id="no-tiktok-toggle" type="checkbox" class="peer sr-only" />
+              <span
+                class="relative h-8 w-14 rounded-full bg-ink/10 transition peer-checked:bg-tide"
+              >
+                <span
+                  class="absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow transition peer-checked:translate-x-6"
+                ></span>
+              </span>
+              <span class="text-sm font-medium">No TikTok run</span>
+            </label>
             <button
               id="refresh-status"
               class="rounded-full border border-ink/10 bg-white px-4 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-0.5"
             >
               Refresh
             </button>
+            <button
+              id="refresh-position"
+              class="rounded-full border border-ink/10 bg-white px-4 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-0.5"
+            >
+              Position
+            </button>
           </div>
           <p class="mt-3 text-sm text-ink/60">
-            Dry run logs G-code without touching the serial port.
+            Dry run logs G-code without touching the serial port. No TikTok run keeps the plotter
+            live but stops the TikTok listener.
           </p>
         </section>
 
@@ -273,6 +294,29 @@
 
         <section
           class="reveal rounded-3xl border border-ink/10 bg-white/80 p-6 shadow-lg shadow-ink/5"
+          style="animation-delay: 0.29s"
+        >
+          <h2 class="text-xl font-semibold">Position</h2>
+          <div class="mt-4 grid gap-3 text-sm text-ink/70">
+            <div class="rounded-2xl border border-ink/10 bg-white/70 px-4 py-3">
+              <div class="text-xs uppercase tracking-[0.3em] text-ink/50">Marlin</div>
+              <div class="mt-2 flex flex-wrap items-center gap-4 text-base font-semibold text-ink">
+                <span>X: <span id="pos-x">--</span></span>
+                <span>Y: <span id="pos-y">--</span></span>
+                <span>Z: <span id="pos-z">--</span></span>
+              </div>
+              <div class="mt-2 text-xs text-ink/50">
+                Updated: <span id="pos-updated">--</span>
+              </div>
+            </div>
+            <p class="text-xs text-ink/60">
+              Values come from Marlin (M114). Use the Position button to refresh.
+            </p>
+          </div>
+        </section>
+
+        <section
+          class="reveal rounded-3xl border border-ink/10 bg-white/80 p-6 shadow-lg shadow-ink/5"
           style="animation-delay: 0.3s"
         >
           <h2 class="text-xl font-semibold">Quick Actions</h2>
@@ -319,6 +363,13 @@
             </div>
             <div class="rounded-2xl border border-ink/10 bg-white/70 p-4">
               <div class="flex items-center justify-between text-sm font-medium">
+                <span>No TikTok Run</span>
+                <button data-action="send-no-tiktok" class="text-tide">Send</button>
+              </div>
+              <pre id="curl-no-tiktok" class="mt-2 whitespace-pre-wrap text-xs text-ink/70"></pre>
+            </div>
+            <div class="rounded-2xl border border-ink/10 bg-white/70 p-4">
+              <div class="flex items-center justify-between text-sm font-medium">
                 <span>Connect</span>
                 <button data-action="send-connect" class="text-tide">Send</button>
               </div>
@@ -358,6 +409,13 @@
                 <button data-action="send-zero" class="text-tide">Send</button>
               </div>
               <pre id="curl-zero" class="mt-2 whitespace-pre-wrap text-xs text-ink/70"></pre>
+            </div>
+            <div class="rounded-2xl border border-ink/10 bg-white/70 p-4">
+              <div class="flex items-center justify-between text-sm font-medium">
+                <span>Request Position</span>
+                <button data-action="send-position" class="text-tide">Send</button>
+              </div>
+              <pre id="curl-position" class="mt-2 whitespace-pre-wrap text-xs text-ink/70"></pre>
             </div>
           </div>
         </section>

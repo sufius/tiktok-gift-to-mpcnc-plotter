@@ -49,6 +49,7 @@
     "tickMs": 500
   },
   "dryRun": false,
+  "noTiktokRun": true,
   "logging": {
     "level": "info"
   }

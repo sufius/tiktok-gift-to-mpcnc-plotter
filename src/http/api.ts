@@ -9,6 +9,7 @@ import type { GiftMapStore } from '../mapping/giftMap.js';
 import type { StateStore } from '../state/stateStore.js';
 import type { PlotterWorker } from '../plotter/worker.js';
 import type { SerialStreamer } from '../plotter/serialStreamer.js';
+import type { TikTokListener } from '../tiktok/listener.js';
 
 const simulateSchema = z.object({
   rowId: z.string().min(1),
@@ -24,6 +25,10 @@ const dryRunSchema = z.object({
   dryRun: z.boolean(),
 });
 
+const noTiktokRunSchema = z.object({
+  noTiktokRun: z.boolean(),
+});
+
 const gcodeSchema = z.object({
   lines: z.array(z.string().min(1)).min(1),
 });
@@ -34,6 +39,7 @@ export type ApiDeps = {
   worker: PlotterWorker;
   giftMap: GiftMapStore;
   streamer: SerialStreamer;
+  tiktokListener: TikTokListener;
   applyGift: (input: GiftApplyInput) => Promise<void>;
   logger: Logger;
 };
@@ -62,6 +68,9 @@ export function createApiServer(deps: ApiDeps): express.Express {
       workerPaused: deps.worker.isPaused(),
       serialConnected: deps.streamer.isConnected(),
       dryRun: deps.config.dryRun,
+      noTiktokRun: deps.config.noTiktokRun,
+      position: deps.streamer.getPosition(),
+      positionUpdatedAt: deps.streamer.getPositionUpdatedAt(),
     });
   });
 
@@ -130,6 +139,45 @@ export function createApiServer(deps: ApiDeps): express.Express {
     }
   });
 
+  app.get('/plotter/position', (_req, res) => {
+    res.json({
+      ok: true,
+      position: deps.streamer.getPosition(),
+      updatedAt: deps.streamer.getPositionUpdatedAt(),
+    });
+  });
+
+  app.post('/plotter/position', async (_req, res) => {
+    try {
+      const position = await deps.streamer.requestPosition();
+      res.json({
+        ok: true,
+        position,
+        updatedAt: deps.streamer.getPositionUpdatedAt(),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'failed to fetch position';
+      res.status(500).json({ error: message });
+    }
+  });
+
+  app.post('/plotter/zero', async (_req, res) => {
+    try {
+      const before = await deps.streamer.requestPosition();
+      await deps.streamer.sendLines(['G92 X0 Y0 Z0']);
+      const after = await deps.streamer.requestPosition();
+      res.json({
+        ok: true,
+        before,
+        after,
+        updatedAt: deps.streamer.getPositionUpdatedAt(),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'failed to zero position';
+      res.status(500).json({ error: message });
+    }
+  });
+
   app.post('/config/dry-run', async (req, res) => {
     const parsed = dryRunSchema.safeParse(req.body ?? {});
     if (!parsed.success) {
@@ -140,6 +188,23 @@ export function createApiServer(deps: ApiDeps): express.Express {
     await deps.streamer.setDryRun(parsed.data.dryRun);
     deps.config.dryRun = parsed.data.dryRun;
     res.json({ ok: true, dryRun: deps.config.dryRun });
+  });
+
+  app.post('/config/no-tiktok-run', async (req, res) => {
+    const parsed = noTiktokRunSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      res.status(400).json({ error: 'invalid request body' });
+      return;
+    }
+
+    deps.config.noTiktokRun = parsed.data.noTiktokRun;
+    if (deps.config.noTiktokRun) {
+      deps.tiktokListener.stop();
+    } else {
+      deps.tiktokListener.start();
+    }
+
+    res.json({ ok: true, noTiktokRun: deps.config.noTiktokRun });
   });
 
   app.post('/simulate/gift', async (req, res) => {

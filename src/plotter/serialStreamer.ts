@@ -10,11 +10,44 @@ type PendingAck = {
   timeout: NodeJS.Timeout;
 };
 
+export type MachinePosition = {
+  x: number;
+  y: number;
+  z: number;
+  e?: number;
+};
+
+function parsePosition(line: string): MachinePosition | null {
+  const match = line.match(
+    /X:\s*([-+]?\d*\.?\d+)\s+Y:\s*([-+]?\d*\.?\d+)\s+Z:\s*([-+]?\d*\.?\d+)/i,
+  );
+  if (!match) {
+    return null;
+  }
+
+  const x = Number(match[1]);
+  const y = Number(match[2]);
+  const z = Number(match[3]);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
+    return null;
+  }
+
+  const eMatch = line.match(/E:\s*([-+]?\d*\.?\d+)/i);
+  const e = eMatch ? Number(eMatch[1]) : undefined;
+  if (e !== undefined && !Number.isFinite(e)) {
+    return { x, y, z };
+  }
+
+  return e !== undefined ? { x, y, z, e } : { x, y, z };
+}
+
 export class SerialStreamer {
   private port: SerialPort | null = null;
   private parser: ReadlineParser | null = null;
   private pending: PendingAck[] = [];
   private busy = false;
+  private position: MachinePosition | null = null;
+  private positionUpdatedAt: number | null = null;
 
   constructor(
     private readonly logger: Logger,
@@ -23,6 +56,35 @@ export class SerialStreamer {
 
   getDryRun(): boolean {
     return this.dryRun;
+  }
+
+  getPosition(): MachinePosition | null {
+    return this.position ? { ...this.position } : null;
+  }
+
+  getPositionUpdatedAt(): number | null {
+    return this.positionUpdatedAt;
+  }
+
+  async requestPosition(timeoutMs = DEFAULT_TIMEOUT_MS): Promise<MachinePosition | null> {
+    if (this.dryRun) {
+      return this.getPosition();
+    }
+
+    if (!this.port?.isOpen) {
+      throw new Error('serial not connected');
+    }
+
+    if (this.busy) {
+      throw new Error('serial streamer busy');
+    }
+
+    const before = this.positionUpdatedAt ?? 0;
+    await this.sendLines(['M114'], timeoutMs);
+    if ((this.positionUpdatedAt ?? 0) <= before) {
+      return this.getPosition();
+    }
+    return this.getPosition();
   }
 
   async setDryRun(next: boolean): Promise<void> {
@@ -153,6 +215,12 @@ export class SerialStreamer {
     const trimmed = line.trim();
     if (!trimmed) {
       return;
+    }
+
+    const position = parsePosition(trimmed);
+    if (position) {
+      this.position = position;
+      this.positionUpdatedAt = Date.now();
     }
 
     const lower = trimmed.toLowerCase();

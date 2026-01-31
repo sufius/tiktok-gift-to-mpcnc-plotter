@@ -2,8 +2,11 @@ const statusText = document.getElementById('status-text');
 const dryRunText = document.getElementById('dryrun-text');
 const serialText = document.getElementById('serial-text');
 const workerText = document.getElementById('worker-text');
+const tiktokText = document.getElementById('tiktok-text');
 const dryRunToggle = document.getElementById('dryrun-toggle');
+const noTiktokToggle = document.getElementById('no-tiktok-toggle');
 const refreshBtn = document.getElementById('refresh-status');
+const refreshPositionBtn = document.getElementById('refresh-position');
 const connectForm = document.getElementById('connect-form');
 const disconnectBtn = document.getElementById('disconnect-btn');
 const giftForm = document.getElementById('gift-form');
@@ -19,12 +22,19 @@ const rowInput = document.getElementById('row-input');
 const countInput = document.getElementById('count-input');
 
 const curlDryRun = document.getElementById('curl-dryrun');
+const curlNoTiktok = document.getElementById('curl-no-tiktok');
 const curlConnect = document.getElementById('curl-connect');
 const curlDisconnect = document.getElementById('curl-disconnect');
 const curlGift = document.getElementById('curl-gift');
 const curlPaper = document.getElementById('curl-paper');
 const curlMapping = document.getElementById('curl-mapping');
 const curlZero = document.getElementById('curl-zero');
+const curlPosition = document.getElementById('curl-position');
+
+const posX = document.getElementById('pos-x');
+const posY = document.getElementById('pos-y');
+const posZ = document.getElementById('pos-z');
+const posUpdated = document.getElementById('pos-updated');
 
 const jogStepInput = document.getElementById('jog-step');
 const jogFeedXYInput = document.getElementById('jog-feed-xy');
@@ -57,7 +67,30 @@ function renderStatus(state) {
   dryRunText.textContent = state.dryRun ? 'On' : 'Off';
   serialText.textContent = state.serialConnected ? 'Connected' : 'Disconnected';
   workerText.textContent = state.workerPaused ? 'Paused' : 'Running';
+  tiktokText.textContent = state.noTiktokRun ? 'Disabled' : 'Enabled';
   dryRunToggle.checked = Boolean(state.dryRun);
+  noTiktokToggle.checked = Boolean(state.noTiktokRun);
+  renderPosition(state.position ?? null, state.positionUpdatedAt);
+}
+
+function renderPosition(position, updatedAt) {
+  if (!position) {
+    posX.textContent = '--';
+    posY.textContent = '--';
+    posZ.textContent = '--';
+    posUpdated.textContent = '--';
+    return;
+  }
+
+  posX.textContent = Number.isFinite(position.x) ? position.x.toFixed(2) : '--';
+  posY.textContent = Number.isFinite(position.y) ? position.y.toFixed(2) : '--';
+  posZ.textContent = Number.isFinite(position.z) ? position.z.toFixed(2) : '--';
+  if (updatedAt) {
+    const ts = new Date(updatedAt);
+    posUpdated.textContent = ts.toLocaleTimeString();
+  } else {
+    posUpdated.textContent = '--';
+  }
 }
 
 async function refreshStatus() {
@@ -75,9 +108,22 @@ async function refreshStatus() {
   }
 }
 
+async function refreshPosition() {
+  try {
+    const response = await requestJson('/plotter/position', { method: 'POST' });
+    renderPosition(response.position, response.updatedAt);
+    logLine('Position updated', response.position ?? {});
+  } catch (error) {
+    logLine('Position failed', { error: error.message });
+  }
+}
+
 function buildCurlSnippets() {
   const dryRunPayload = JSON.stringify({ dryRun: dryRunToggle.checked });
   curlDryRun.textContent = `curl -X POST ${baseUrl}/config/dry-run \\\n  -H 'Content-Type: application/json' \\\n  -d '${dryRunPayload}'`;
+
+  const noTiktokPayload = JSON.stringify({ noTiktokRun: noTiktokToggle.checked });
+  curlNoTiktok.textContent = `curl -X POST ${baseUrl}/config/no-tiktok-run \\\n  -H 'Content-Type: application/json' \\\n  -d '${noTiktokPayload}'`;
 
   const connectPayload = {};
   if (portInput.value.trim()) {
@@ -103,7 +149,8 @@ function buildCurlSnippets() {
 
   curlPaper.textContent = `curl -X POST ${baseUrl}/paper/changed`;
   curlMapping.textContent = `curl -X POST ${baseUrl}/mapping/reload`;
-  curlZero.textContent = `curl -X POST ${baseUrl}/plotter/gcode \\\\\n+  -H 'Content-Type: application/json' \\\\\n+  -d '{\"lines\":[\"G92 X0 Y0 Z0\"]}'`;
+  curlZero.textContent = `curl -X POST ${baseUrl}/plotter/zero`;
+  curlPosition.textContent = `curl -X POST ${baseUrl}/plotter/position`;
 }
 
 async function toggleDryRun() {
@@ -122,6 +169,22 @@ async function toggleDryRun() {
   buildCurlSnippets();
 }
 
+async function toggleNoTiktokRun() {
+  try {
+    const payload = { noTiktokRun: noTiktokToggle.checked };
+    const response = await requestJson('/config/no-tiktok-run', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    logLine('No TikTok run updated', response);
+    await refreshStatus();
+  } catch (error) {
+    noTiktokToggle.checked = !noTiktokToggle.checked;
+    logLine('No TikTok run update failed', { error: error.message });
+  }
+  buildCurlSnippets();
+}
+
 async function sendGcode(lines) {
   const response = await requestJson('/plotter/gcode', {
     method: 'POST',
@@ -131,7 +194,7 @@ async function sendGcode(lines) {
 }
 
 function formatMove(axis, distance, feedRate) {
-  return `G91\\nG0 ${axis}${distance} F${feedRate}\\nG90`;
+  return ['G91', `G0 ${axis}${distance} F${feedRate}`, 'G90'];
 }
 
 connectForm.addEventListener('submit', async (event) => {
@@ -203,8 +266,9 @@ reloadMappingBtn.addEventListener('click', async () => {
 
 zeroPositionBtn.addEventListener('click', async () => {
   try {
-    const response = await sendGcode(['G92 X0 Y0 Z0']);
-    logLine('Zeroed position', response);
+    const response = await requestJson('/plotter/zero', { method: 'POST' });
+    renderPosition(response.after ?? response.position ?? null, response.updatedAt);
+    logLine('Zeroed position', response.after ?? response.position ?? response);
   } catch (error) {
     logLine('Zero position failed', { error: error.message });
   }
@@ -234,8 +298,9 @@ jogButtons.forEach((button) => {
         return;
       }
       if (action === 'zero') {
-        const response = await sendGcode(['G92 X0 Y0 Z0']);
-        logLine('Zeroed position', response);
+        const response = await requestJson('/plotter/zero', { method: 'POST' });
+        renderPosition(response.after ?? response.position ?? null, response.updatedAt);
+        logLine('Zeroed position', response.after ?? response.position ?? response);
         return;
       }
 
@@ -266,7 +331,7 @@ jogButtons.forEach((button) => {
         return;
       }
 
-      const lines = formatMove(axis, distance, feed).split('\n');
+      const lines = formatMove(axis, distance, feed);
       const response = await sendGcode(lines);
       logLine('Jog', { axis, distance, feed, ...response });
     } catch (error) {
@@ -276,6 +341,7 @@ jogButtons.forEach((button) => {
 });
 
 refreshBtn.addEventListener('click', refreshStatus);
+refreshPositionBtn.addEventListener('click', refreshPosition);
 
 clearLogBtn.addEventListener('click', () => {
   logOutput.textContent = '';
@@ -293,6 +359,10 @@ sendButtons.forEach((button) => {
     try {
       if (action === 'send-dryrun') {
         await toggleDryRun();
+        return;
+      }
+      if (action === 'send-no-tiktok') {
+        await toggleNoTiktokRun();
         return;
       }
       if (action === 'send-connect') {
@@ -319,6 +389,10 @@ sendButtons.forEach((button) => {
         zeroPositionBtn.click();
         return;
       }
+      if (action === 'send-position') {
+        refreshPosition();
+        return;
+      }
     } catch (error) {
       logLine('Action failed', { action, error: error.message });
     }
@@ -326,6 +400,7 @@ sendButtons.forEach((button) => {
 });
 
 dryRunToggle.addEventListener('change', toggleDryRun);
+noTiktokToggle.addEventListener('change', toggleNoTiktokRun);
 
 buildCurlSnippets();
 refreshStatus();

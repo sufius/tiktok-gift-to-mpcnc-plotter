@@ -42,6 +42,7 @@ export const ConfigSchema = z.object({
     tickMs: z.number().int().positive(),
   }),
   dryRun: z.boolean(),
+  noTiktokRun: z.boolean(),
   logging: z.object({
     level: z.string().default('info'),
   }),
@@ -88,6 +89,10 @@ export async function loadConfig(): Promise<AppConfig> {
       process.env.DRY_RUN !== undefined
         ? process.env.DRY_RUN.toLowerCase() === 'true'
         : (parsed as any).dryRun,
+    noTiktokRun:
+      process.env.NO_TIKTOK_RUN !== undefined
+        ? process.env.NO_TIKTOK_RUN.toLowerCase() === 'true'
+        : (parsed as any).noTiktokRun,
     logging: {
       ...(parsed as any).logging,
       level: process.env.LOG_LEVEL ?? (parsed as any).logging?.level,
