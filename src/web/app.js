@@ -63,13 +63,15 @@ async function requestJson(path, options = {}) {
 }
 
 function renderStatus(state) {
+  const plotterActive = !state.dryRun;
+  const tiktokActive = !state.noTiktokRun;
   statusText.textContent = 'OK';
-  dryRunText.textContent = state.dryRun ? 'On' : 'Off';
+  dryRunText.textContent = plotterActive ? 'On' : 'Off';
   serialText.textContent = state.serialConnected ? 'Connected' : 'Disconnected';
   workerText.textContent = state.workerPaused ? 'Paused' : 'Running';
-  tiktokText.textContent = state.noTiktokRun ? 'Disabled' : 'Enabled';
-  dryRunToggle.checked = Boolean(state.dryRun);
-  noTiktokToggle.checked = Boolean(state.noTiktokRun);
+  tiktokText.textContent = tiktokActive ? 'On' : 'Off';
+  dryRunToggle.checked = plotterActive;
+  noTiktokToggle.checked = tiktokActive;
   renderPosition(state.position ?? null, state.positionUpdatedAt);
 }
 
@@ -119,10 +121,10 @@ async function refreshPosition() {
 }
 
 function buildCurlSnippets() {
-  const dryRunPayload = JSON.stringify({ dryRun: dryRunToggle.checked });
+  const dryRunPayload = JSON.stringify({ dryRun: !dryRunToggle.checked });
   curlDryRun.textContent = `curl -X POST ${baseUrl}/config/dry-run \\\n  -H 'Content-Type: application/json' \\\n  -d '${dryRunPayload}'`;
 
-  const noTiktokPayload = JSON.stringify({ noTiktokRun: noTiktokToggle.checked });
+  const noTiktokPayload = JSON.stringify({ noTiktokRun: !noTiktokToggle.checked });
   curlNoTiktok.textContent = `curl -X POST ${baseUrl}/config/no-tiktok-run \\\n  -H 'Content-Type: application/json' \\\n  -d '${noTiktokPayload}'`;
 
   const connectPayload = {};
@@ -155,32 +157,32 @@ function buildCurlSnippets() {
 
 async function toggleDryRun() {
   try {
-    const payload = { dryRun: dryRunToggle.checked };
+    const payload = { dryRun: !dryRunToggle.checked };
     const response = await requestJson('/config/dry-run', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    logLine('Dry run updated', response);
+    logLine('Plotter active updated', response);
     await refreshStatus();
   } catch (error) {
     dryRunToggle.checked = !dryRunToggle.checked;
-    logLine('Dry run update failed', { error: error.message });
+    logLine('Plotter active update failed', { error: error.message });
   }
   buildCurlSnippets();
 }
 
 async function toggleNoTiktokRun() {
   try {
-    const payload = { noTiktokRun: noTiktokToggle.checked };
+    const payload = { noTiktokRun: !noTiktokToggle.checked };
     const response = await requestJson('/config/no-tiktok-run', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    logLine('No TikTok run updated', response);
+    logLine('TikTok active updated', response);
     await refreshStatus();
   } catch (error) {
     noTiktokToggle.checked = !noTiktokToggle.checked;
-    logLine('No TikTok run update failed', { error: error.message });
+    logLine('TikTok active update failed', { error: error.message });
   }
   buildCurlSnippets();
 }
