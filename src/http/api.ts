@@ -33,6 +33,10 @@ const gcodeSchema = z.object({
   lines: z.array(z.string().min(1)).min(1),
 });
 
+function fmt(value: number): string {
+  return Number(value.toFixed(3)).toString();
+}
+
 export type ApiDeps = {
   config: AppConfig;
   stateStore: StateStore;
@@ -157,6 +161,27 @@ export function createApiServer(deps: ApiDeps): express.Express {
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'failed to fetch position';
+      res.status(500).json({ error: message });
+    }
+  });
+
+  app.post('/plotter/safe-home', async (_req, res) => {
+    try {
+      const { x0, y0, zUp, plungeRate } = deps.config.plotter;
+      await deps.streamer.sendLines([
+        'G90',
+        'G21',
+        `G1 Z${fmt(zUp)} F${fmt(plungeRate)}`,
+        `G0 X${fmt(x0)} Y${fmt(y0)}`,
+      ]);
+      const position = await deps.streamer.requestPosition();
+      res.json({
+        ok: true,
+        position,
+        updatedAt: deps.streamer.getPositionUpdatedAt(),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'failed to move to safe home';
       res.status(500).json({ error: message });
     }
   });

@@ -13,6 +13,7 @@ const giftForm = document.getElementById('gift-form');
 const paperChangedBtn = document.getElementById('paper-changed');
 const reloadMappingBtn = document.getElementById('reload-mapping');
 const zeroPositionBtn = document.getElementById('zero-position');
+const goOriginBtn = document.getElementById('go-origin');
 const clearLogBtn = document.getElementById('clear-log');
 const logOutput = document.getElementById('log-output');
 
@@ -30,6 +31,7 @@ const curlPaper = document.getElementById('curl-paper');
 const curlMapping = document.getElementById('curl-mapping');
 const curlZero = document.getElementById('curl-zero');
 const curlPosition = document.getElementById('curl-position');
+const curlOrigin = document.getElementById('curl-origin');
 
 const posX = document.getElementById('pos-x');
 const posY = document.getElementById('pos-y');
@@ -151,6 +153,7 @@ function buildCurlSnippets() {
 
   curlPaper.textContent = `curl -X POST ${baseUrl}/paper/changed`;
   curlMapping.textContent = `curl -X POST ${baseUrl}/mapping/reload`;
+  curlOrigin.textContent = `curl -X POST ${baseUrl}/plotter/safe-home`;
   curlZero.textContent = `curl -X POST ${baseUrl}/plotter/zero`;
   curlPosition.textContent = `curl -X POST ${baseUrl}/plotter/position`;
 }
@@ -263,6 +266,16 @@ reloadMappingBtn.addEventListener('click', async () => {
     logLine('Mapping reloaded', response);
   } catch (error) {
     logLine('Mapping reload failed', { error: error.message });
+  }
+});
+
+goOriginBtn.addEventListener('click', async () => {
+  try {
+    const response = await requestJson('/plotter/safe-home', { method: 'POST' });
+    logLine('Moved to X0 Y0 (safe Z)', response);
+    refreshPosition();
+  } catch (error) {
+    logLine('Move to X0 Y0 failed', { error: error.message });
   }
 });
 
@@ -385,6 +398,10 @@ sendButtons.forEach((button) => {
       }
       if (action === 'send-mapping') {
         reloadMappingBtn.click();
+        return;
+      }
+      if (action === 'send-origin') {
+        goOriginBtn.click();
         return;
       }
       if (action === 'send-zero') {

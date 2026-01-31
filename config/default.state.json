@@ -1,12 +1,12 @@
 {
   "rows": {
     "row1": {
-      "x": 0,
+      "x": 32,
       "y": 0,
       "pendingStrokes": 0
     },
     "row2": {
-      "x": 0,
+      "x": 24,
       "y": 9,
       "pendingStrokes": 0
     },
@@ -81,7 +81,7 @@
       "pendingStrokes": 0
     },
     "row17": {
-      "x": 0,
+      "x": 80,
       "y": 144,
       "pendingStrokes": 0
     }
