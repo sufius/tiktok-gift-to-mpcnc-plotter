@@ -320,6 +320,12 @@
               Reload Mapping
             </button>
             <button
+              id="reload-config"
+              class="rounded-full border border-ink/10 bg-white px-5 py-2 text-sm font-medium shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0.5 active:scale-95 active:shadow-none active:brightness-95"
+            >
+              Reload Config
+            </button>
+            <button
               id="go-origin"
               class="rounded-full border border-ink/10 bg-white px-5 py-2 text-sm font-medium shadow-sm transition-all hover:-translate-y-0.5 active:translate-y-0.5 active:scale-95 active:shadow-none active:brightness-95"
             >
@@ -428,6 +434,18 @@
                 </button>
               </div>
               <pre id="curl-mapping" class="mt-2 whitespace-pre-wrap text-xs text-ink/70"></pre>
+            </div>
+            <div class="rounded-2xl border border-ink/10 bg-white/70 p-4">
+              <div class="flex items-center justify-between text-sm font-medium">
+                <span>Reload Config</span>
+                <button
+                  data-action="send-config"
+                  class="rounded-full px-2 py-1 text-tide transition-all active:scale-95 active:opacity-70"
+                >
+                  Send
+                </button>
+              </div>
+              <pre id="curl-config" class="mt-2 whitespace-pre-wrap text-xs text-ink/70"></pre>
             </div>
             <div class="rounded-2xl border border-ink/10 bg-white/70 p-4">
               <div class="flex items-center justify-between text-sm font-medium">

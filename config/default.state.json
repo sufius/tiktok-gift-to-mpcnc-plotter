@@ -1,22 +1,22 @@
 {
   "rows": {
     "row1": {
-      "x": 2,
+      "x": 14,
       "y": 0,
       "pendingStrokes": 0
     },
     "row2": {
-      "x": 1,
+      "x": 4,
       "y": 20,
       "pendingStrokes": 0
     },
     "row3": {
-      "x": 1,
+      "x": 28,
       "y": 40,
       "pendingStrokes": 0
     },
     "row4": {
-      "x": 1,
+      "x": 11,
       "y": 60,
       "pendingStrokes": 0
     },
@@ -41,13 +41,13 @@
       "pendingStrokes": 0
     },
     "row9": {
-      "x": 1,
+      "x": 2,
       "y": 120,
       "pendingStrokes": 0
     },
     "row10": {
       "x": 3,
-      "y": 130,
+      "y": 170,
       "pendingStrokes": 0
     }
   },

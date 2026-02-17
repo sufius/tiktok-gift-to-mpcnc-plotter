@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 import type { Logger } from 'pino';
+import { loadConfig } from '../config.js';
 import type { AppConfig } from '../config.js';
 import type { GiftApplyInput } from '../types.js';
 import type { GiftMapStore } from '../mapping/giftMap.js';
@@ -35,6 +36,19 @@ const gcodeSchema = z.object({
 
 function fmt(value: number): string {
   return Number(value.toFixed(3)).toString();
+}
+
+function applyConfig(target: AppConfig, source: AppConfig): void {
+  target.http = source.http;
+  target.tiktok = source.tiktok;
+  target.files = source.files;
+  target.plotter = source.plotter;
+  target.rows = source.rows;
+  target.serial = source.serial;
+  target.worker = source.worker;
+  target.dryRun = source.dryRun;
+  target.noTiktokRun = source.noTiktokRun;
+  target.logging = source.logging;
 }
 
 export type ApiDeps = {
@@ -101,6 +115,35 @@ export function createApiServer(deps: ApiDeps): express.Express {
   app.post('/mapping/reload', async (_req, res) => {
     await deps.giftMap.load();
     res.json({ ok: true });
+  });
+
+  app.post('/config/reload', async (_req, res) => {
+    try {
+      const prevTickMs = deps.config.worker.tickMs;
+      const nextConfig = await loadConfig();
+      applyConfig(deps.config, nextConfig);
+      await deps.streamer.setDryRun(deps.config.dryRun);
+      await deps.stateStore.applyConfig(deps.config);
+      deps.giftMap.setPath(deps.config.files.giftMapPath);
+      await deps.giftMap.load();
+
+      deps.tiktokListener.stop();
+      if (!deps.config.noTiktokRun && (deps.config.tiktok.username || deps.config.tiktok.roomId)) {
+        deps.tiktokListener.start();
+      }
+
+      if (prevTickMs !== deps.config.worker.tickMs) {
+        deps.worker.stop();
+        deps.worker.start();
+      } else {
+        deps.worker.kick();
+      }
+
+      res.json({ ok: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'failed to reload config';
+      res.status(500).json({ error: message });
+    }
   });
 
   app.post('/plotter/connect', async (req, res) => {

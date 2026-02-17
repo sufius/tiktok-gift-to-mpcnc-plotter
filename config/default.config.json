@@ -32,7 +32,7 @@
     "row7": { "y": 100 },
     "row8": { "y": 110 },
     "row9": { "y": 120 },
-    "row10": { "y": 130 }
+    "row10": { "y": 170 }
   },
   "serial": {
     "port": "COM3",
@@ -42,7 +42,7 @@
     "tickMs": 500
   },
   "dryRun": false,
-  "noTiktokRun": true,
+  "noTiktokRun": false,
   "logging": {
     "level": "info"
   }

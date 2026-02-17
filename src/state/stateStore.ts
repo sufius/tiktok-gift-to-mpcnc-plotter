@@ -83,7 +83,7 @@ export class StateStore {
   constructor(
     private readonly statePath: string,
     private readonly logger: Logger,
-    private readonly config: AppConfig,
+    private config: AppConfig,
   ) {}
 
   async loadOrCreate(defaultState: PlotterState): Promise<PlotterState> {
@@ -122,6 +122,20 @@ export class StateStore {
       this.state = next;
       await atomicWrite(this.statePath, JSON.stringify(next, null, 2));
       return structuredClone(next);
+    });
+  }
+
+  async applyConfig(nextConfig: AppConfig): Promise<PlotterState> {
+    return this.mutex.runExclusive(async () => {
+      if (!this.state) {
+        throw new Error('state not initialized');
+      }
+      this.config = nextConfig;
+      const merged = mergeStateWithConfig(this.state, nextConfig);
+      this.state = merged;
+      await atomicWrite(this.statePath, JSON.stringify(merged, null, 2));
+      this.logger.info({ path: this.statePath }, 'state updated for config reload');
+      return structuredClone(merged);
     });
   }
 }

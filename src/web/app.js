@@ -12,6 +12,7 @@ const disconnectBtn = document.getElementById('disconnect-btn');
 const giftForm = document.getElementById('gift-form');
 const paperChangedBtn = document.getElementById('paper-changed');
 const reloadMappingBtn = document.getElementById('reload-mapping');
+const reloadConfigBtn = document.getElementById('reload-config');
 const zeroPositionBtn = document.getElementById('zero-position');
 const goOriginBtn = document.getElementById('go-origin');
 const clearLogBtn = document.getElementById('clear-log');
@@ -29,6 +30,7 @@ const curlDisconnect = document.getElementById('curl-disconnect');
 const curlGift = document.getElementById('curl-gift');
 const curlPaper = document.getElementById('curl-paper');
 const curlMapping = document.getElementById('curl-mapping');
+const curlConfig = document.getElementById('curl-config');
 const curlZero = document.getElementById('curl-zero');
 const curlPosition = document.getElementById('curl-position');
 const curlOrigin = document.getElementById('curl-origin');
@@ -153,6 +155,7 @@ function buildCurlSnippets() {
 
   curlPaper.textContent = `curl -X POST ${baseUrl}/paper/changed`;
   curlMapping.textContent = `curl -X POST ${baseUrl}/mapping/reload`;
+  curlConfig.textContent = `curl -X POST ${baseUrl}/config/reload`;
   curlOrigin.textContent = `curl -X POST ${baseUrl}/plotter/safe-home`;
   curlZero.textContent = `curl -X POST ${baseUrl}/plotter/zero`;
   curlPosition.textContent = `curl -X POST ${baseUrl}/plotter/position`;
@@ -266,6 +269,16 @@ reloadMappingBtn.addEventListener('click', async () => {
     logLine('Mapping reloaded', response);
   } catch (error) {
     logLine('Mapping reload failed', { error: error.message });
+  }
+});
+
+reloadConfigBtn.addEventListener('click', async () => {
+  try {
+    const response = await requestJson('/config/reload', { method: 'POST' });
+    logLine('Config reloaded', response);
+    await refreshStatus();
+  } catch (error) {
+    logLine('Config reload failed', { error: error.message });
   }
 });
 
@@ -398,6 +411,10 @@ sendButtons.forEach((button) => {
       }
       if (action === 'send-mapping') {
         reloadMappingBtn.click();
+        return;
+      }
+      if (action === 'send-config') {
+        reloadConfigBtn.click();
         return;
       }
       if (action === 'send-origin') {

@@ -5,9 +5,13 @@ export class GiftMapStore {
   private map = new Map<string, string>();
 
   constructor(
-    private readonly giftMapPath: string,
+    private giftMapPath: string,
     private readonly logger: Logger,
   ) {}
+
+  setPath(nextPath: string): void {
+    this.giftMapPath = nextPath;
+  }
 
   async load(): Promise<void> {
     const raw = await readFile(this.giftMapPath, 'utf8');
